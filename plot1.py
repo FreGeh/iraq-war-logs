@@ -5,16 +5,16 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import plotly.express as px
 import pandas as pd
+import datetime
 
 # Sample data
 df = pd.read_csv("iraq_sigacts.csv")
 
-# Convert 'Datetime' column to datetime and extract the year
-df['Datetime'] = pd.to_datetime(df['Datetime'])
-df['Year'] = df['Datetime'].dt.year
+# Convert 'Datetime' column to datetime and extract the day
+df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date
 
-# Group by year and sum the KIA columns
-df_grouped = df.groupby('Year')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA']].sum().reset_index()
+# Group by day and sum the KIA columns
+df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA']].sum().reset_index()
 
 # Set up Dash app
 app = dash.Dash(__name__)
@@ -30,46 +30,62 @@ app.layout = html.Div([
         value=['Civilian_KIA']
     ),
     dcc.Graph(id='bar-plot'),
-    html.Button('Change Display', id='change', n_clicks=0),
+    dcc.RangeSlider(
+        id='date-slider',
+        min=datetime.datetime.combine(df_grouped['Datetime'].min(), datetime.time.min).timestamp(),
+        max=datetime.datetime.combine(df_grouped['Datetime'].max(), datetime.time.min).timestamp(),
+        value=[
+            datetime.datetime.combine(df_grouped['Datetime'].min(), datetime.time.min).timestamp(),
+            datetime.datetime.combine(df_grouped['Datetime'].max(), datetime.time.min).timestamp()
+        ],
+        step=None,
+),
+
 ])
 
-# Farben für jedes Attribut
+# Colors for each attribute
 colors = {
     'Enemy_KIA': 'red',
     'Friend_KIA': 'green',
     'Civilian_KIA': 'blue'
 }
 
+# ... (previous code remains the same)
+
 # Callback function
 @app.callback(
     Output('bar-plot', 'figure'),
-    [Input('attribute-selector', 'value'), 
-    Input('change', 'n_clicks')]
+    [Input('attribute-selector', 'value'), Input('date-slider', 'value')]
 )
-def update_bar_plot(selected_attributes, n_clicks):
+def update_combined_plot(selected_attributes, date_range):
+    date_range = [pd.to_datetime(ts, unit='s').date() for ts in date_range]
+    df_filtered = df_grouped[(df_grouped['Datetime'] >= date_range[0]) & (df_grouped['Datetime'] <= date_range[1])]
+
     data = []
 
-    #prozent für den button
-    isPercentage = False
-    if n_clicks is not None and n_clicks % 2 == 1:
-        isPercentage = True
-
     for attribute in selected_attributes:
-        y_values = df_grouped[attribute] #y werte gespeichert
-        #unterscheidung prozent und normalen werten
-        if isPercentage == True:
-            y_values = y_values / df_grouped[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA']].sum(axis=1) * 100
-            hovertemplate = "<b>Deaths</b>: %{y:.2f}% <br> <b>Year</b>: %{x}"
-        else:
-            hovertemplate = "<b>Deaths</b>: %{y} <br> <b>Year</b>: %{x}"
-        data.append(go.Bar(x=df_grouped['Year'], y=y_values, name=attribute, marker_color = colors[attribute], hovertemplate=hovertemplate))
-    
-    title = "Killed in Action per Year"
-    
-    if isPercentage:
-        title = "Killed in Action per Year %"
+        data.append(go.Bar(x=df_filtered['Datetime'], y=df_filtered[attribute], name=attribute, marker_color=colors[attribute],
+                           hovertemplate="<b>Deaths</b>: %{y} <br> <b>Day</b>: %{x}"))
+
+        # Calculate 14-day moving average
+        moving_average = df_filtered[attribute].rolling(window=14).mean()
+
+        data.append(go.Scatter(x=df_filtered['Datetime'], y=moving_average, mode='lines', name=f"{attribute} 14-day MA", marker_color=colors[attribute],
+                               hovertemplate="<b>14-day Moving Avg</b>: %{y:.2f} <br> <b>Day</b>: %{x}"))
+
     fig = go.Figure(data=data)
-    fig.update_layout(showlegend=True, barmode='stack', title=title, yaxis=dict(range=[0, 100 if isPercentage else df_grouped[['Enemy_KIA']].values.max() + df_grouped[['Friend_KIA']].values.max() + df_grouped[['Civilian_KIA']].values.max()]))
+    fig.update_layout(showlegend=True, title="Killed in Action per Day with 14-day Moving Averages", xaxis_title="Date", yaxis_title="Number of Deaths", barmode='stack')
+
+    # Add range slider
+    fig.update_layout(
+        xaxis=dict(
+            rangeslider=dict(
+                visible=True
+            ),
+            type="date"
+        )
+    )
+
     return fig
 
 if __name__ == '__main__':
