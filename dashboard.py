@@ -3,6 +3,7 @@ import dash_html_components as html
 import dash
 from dash.dependencies import Input, Output
 from plots.plot1 import create_plot1_layout, create_plot1_callback
+from plots.plot2 import create_plot2_layout
 
 app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
@@ -32,7 +33,7 @@ app.layout = html.Div([
                Input('plot2-button', 'n_clicks'),
                Input('plot3-button', 'n_clicks'),
                Input('plot4-button', 'n_clicks')])
-def display_page(n_clicks_plot1, n_clicks_plot2, n_clicks_plot3):
+def display_page(n_clicks_plot1, n_clicks_plot2, n_clicks_plot3, n_clicks_plot4):
     ctx = dash.callback_context
     if not ctx.triggered:
         return html.Div([])
@@ -40,13 +41,16 @@ def display_page(n_clicks_plot1, n_clicks_plot2, n_clicks_plot3):
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if button_id == 'plot1-button':
-        return create_plot1_layout()
+        fig1 = create_plot1_layout()
+        return dcc.Graph(figure=fig1)
     elif button_id == 'plot2-button':
-        # Replace with your plot 2 layout
-        return html.Div([html.H3('Plot 2')])
+        fig2 = create_plot2_layout()
+        return dcc.Graph(figure=fig2)
     elif button_id == 'plot3-button':
-        # Replace with your plot 3 layout
-        return html.Div([html.H3('Plot 3')])
+        return html.Div([html.H3('Plot 3 layout goes here.')])
+    elif button_id == 'plot4-button':
+        return html.Div([html.H3('Plot 4 layout goes here.')])
+
 
 
 create_plot1_callback(app)

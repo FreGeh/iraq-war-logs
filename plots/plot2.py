@@ -1,81 +1,141 @@
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
-import plotly.graph_objs as go
 import pandas as pd
-import datetime
-from dash import no_update
+import geopandas as gpd
+import json
+import plotly.graph_objects as go
+import numpy as np
+from urllib.request import urlopen
 
-# Sample data
-df = pd.read_csv("./iraq_sigacts.csv")
 
-# Convert 'Datetime' column to datetime and extract the day
-df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date
+with open("merged_provinces.geojson") as f:
+    data = json.load(f)
 
-# 
+# Read the CSV
+df = pd.read_csv('iraq.csv')
 
-# Group by day and sum the KIA columns
-df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA']].sum().reset_index()
+# Convert 'Datetime' column to datetime and extract the month
+df['Datetime'] = pd.to_datetime(df['Datetime'])
+df['Month'] = df['Datetime'].dt.to_period('M')
 
-colors = {
-    'Enemy_KIA': 'red',
-    'Friend_KIA': 'green',
-    'Civilian_KIA': 'blue'
-}
+# Group by Region and Month and sum the KIA columns
+df_grouped = df.groupby(['Region', 'Month'])[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum().reset_index()
 
-def create_plot1_layout():
-    layout = html.Div([
-        html.H3('Plot 2'),
-        dcc.Graph(id='bar-plot'),
-    ])
-    return layout
+# Calculate the sum of the four columns
+df_grouped['Total_KIA'] = df_grouped[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum(axis=1)
 
-def create_plot1_callback(app):
-    @app.callback(
-            Output('bar-plot', 'figure'),
-            [Input('attribute-selector', 'value')]
-        )
-    def update_combined_plot(selected_attributes):
-        data = []
+# Calculate the percentage of 'Enemy_KIA'
+df_grouped['Enemy_KIA_Percentage'] = df_grouped['Enemy_KIA'] / df_grouped['Total_KIA'] * 100
+df_grouped['Friend_KIA_Percentage'] = df_grouped['Friend_KIA'] / df_grouped['Total_KIA'] * 100
+df_grouped['Civilian_KIA_Percentage'] = df_grouped['Civilian_KIA'] / df_grouped['Total_KIA'] * 100
+df_grouped['Host_nation_KIA_Percentage'] = df_grouped['Host_nation_KIA'] / df_grouped['Total_KIA'] * 100
 
-        for attribute in selected_attributes:
-            data.append(go.Bar(x=df_grouped['Datetime'], y=df_grouped[attribute], name=attribute, marker_color=colors[attribute],
-                                hovertemplate="<b>Deaths</b>: %{y} <br> <b>Day</b>: %{x}"))
+# Merge with the geojson data
+# Assuming 'NAME_1' in geojson data is corresponding to 'Region' in your CSV
+for feature in data['features']:
+    feature['id'] = feature['properties']['NAME_1']
 
-            # Calculate 14-day moving average
-            moving_average = df_grouped[attribute].rolling(window=14).mean()
+# Convert 'Month' to string for animation_frame
+df_grouped['Month'] = df_grouped['Month'].astype(str)
 
-            data.append(go.Scatter(x=df_grouped['Datetime'], y=moving_average, mode='lines', name=f"{attribute} 14-day MA", marker_color=colors[attribute],
-                                    hovertemplate="<b>14-day Moving Avg</b>: %{y:.2f} <br> <b>Day</b>: %{x}"))
+months = np.sort(df_grouped.Month.unique())
 
-        fig = go.Figure(data=data)
-        fig.update_layout(showlegend=True, title="Killed in Action per Day with 14-day Moving Averages", xaxis_title="Date", yaxis_title="Number of Deaths", barmode='stack')
+fig = go.Figure()
 
-        # Add range selector and range slider
-        fig.update_xaxes(
-            rangeslider_visible=True,
-            rangeselector=dict(
+# Merge with the geo dataframe
+#merged = gdf.merge(df_grouped, left_on='NAME_1', right_on='Region', how='inner')
+
+def create_plot2_layout():
+
+    fig = go.Figure()
+
+    # Create a trace for each kia_type in the first month
+    for kia_type in ['Enemy_KIA_Percentage', 'Friend_KIA_Percentage', 'Civilian_KIA_Percentage', 'Host_nation_KIA_Percentage']:
+        fig.add_trace(go.Choroplethmapbox(visible=(kia_type == 'Enemy_KIA_Percentage'),
+                                          geojson=data, 
+                                          locations=df_grouped[df_grouped.Month == months[0]].Region, 
+                                          z=df_grouped[df_grouped.Month == months[0]][kia_type], 
+                                          colorscale="YlOrRd",
+                                          zmin=0,
+                                          zmax=100,
+                                          marker_opacity=0.9, 
+                                          marker_line_width=0,
+                                          name=kia_type))
+
+    frames = []  # Create a list to store frames
+
+    # Create a frame for each month
+    for month in months:
+        month_df = df_grouped[df_grouped.Month == month]
+        frames.append(go.Frame(data=[
+            go.Choroplethmapbox(geojson=data, 
+                                locations=month_df.Region, 
+                                z=month_df[kia_type], 
+                                colorscale="YlOrRd",
+                                zmin=0,
+                                zmax=100,
+                                marker_opacity=0.9, 
+                                marker_line_width=0)
+            for kia_type in ['Enemy_KIA_Percentage', 'Friend_KIA_Percentage', 'Civilian_KIA_Percentage', 'Host_nation_KIA_Percentage']
+        ], name=f'{month}'))
+
+    fig.frames = frames  # Assign the list of frames to fig.frames
+
+    fig.update_layout(
+        updatemenus=[
+            dict(
+                type="buttons",
+                showactive=False,
                 buttons=list([
-                    dict(count=1,
-                         label="1m",
-                         step="month",
-                         stepmode="backward"),
-                    dict(count=6,
-                         label="6m",
-                         step="month",
-                         stepmode="backward"),
-                    dict(count=1,
-                         label="1y",
-                         step="year",
-                         stepmode="backward"),
-                    dict(count=1,
-                         label="YTD",
-                         step="year",
-                         stepmode="todate"),
-                    dict(step="all")                
-                ])
+                    dict(label="Play",
+                         method="animate",
+                         args=[None, {"frame": {"duration": 500, "redraw": True},
+                                      "fromcurrent": True,
+                                      "transition": {"duration": 300,
+                                                     "easing": "quadratic-in-out"}}])
+                ]),
             ),
-            type="date"
-        )
+            dict(
+                direction="down",
+                pad={"r": 10, "t": 10},
+                showactive=True,
+                x=0.1,
+                xanchor="left",
+                y=1.1,
+                yanchor="top",
+                buttons=list([
+                    dict(label="Enemy_KIA_Percentage",
+                         method="update",
+                         args=[{"visible": [True, False, False, False]}]),
+                    dict(label="Friend_KIA_Percentage",
+                         method="update",
+                         args=[{"visible": [False, True, False, False]}]),
+                    dict(label="Civilian_KIA_Percentage",
+                         method="update",
+                         args=[{"visible": [False, False, True, False]}]),
+                    dict(label="Host_nation_KIA_Percentage",
+                         method="update",
+                         args=[{"visible": [False, False, False, True]}])
+                ]),
+            )
+        ],
+        sliders=[dict(steps = [dict(method= 'animate',
+                            args= [[f'{kia_type}_{month}'],
+                            {"frame": {"duration": 300, "redraw": True},
+                             "mode": "immediate",
+                             "transition": {"duration": 300}}],
+                            label=month) for kia_type in ['Enemy_KIA_Percentage', 'Friend_KIA_Percentage', 'Civilian_KIA_Percentage', 'Host_nation_KIA_Percentage'] for month in months],
+                active=0,
+                transition= {"duration": 300 },
+                x=0,
+                y=0, 
+                currentvalue=dict(font=dict(size=12), 
+                                  prefix='Month: ', 
+                                  visible=True, 
+                                  xanchor='center'))],
+        mapbox_style="carto-positron",
+        mapbox_zoom=3,
+        mapbox_center = {"lat": 33.3152, "lon": 44.3661},  # approximate center of Iraq
+        title="Killed in Action by Region"
+    )
 
-        return fig
+    return fig
+
