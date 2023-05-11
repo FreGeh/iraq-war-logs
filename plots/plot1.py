@@ -7,29 +7,32 @@ import datetime
 from dash import no_update
 
 # Sample data
-df = pd.read_csv("./iraq_sigacts.csv")
+df = pd.read_csv("./iraq.csv")
 
 # Convert 'Datetime' column to datetime and extract the day
 df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date
 
 # Group by day and sum the KIA columns
-df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA']].sum().reset_index()
+df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum().reset_index()
 
 colors = {
     'Enemy_KIA': 'red',
     'Friend_KIA': 'green',
-    'Civilian_KIA': 'blue'
+    'Civilian_KIA': 'blue',
+    'Host_nation_KIA': 'orange'
 }
 
 def create_plot1_layout():
     layout = html.Div([
-        html.H3('Plot 1'),
+        html.H1('Plot 1'),
+        html.H3('Killed in Action:'),
         dcc.Checklist(
             id='attribute-selector',
             options=[
-                {'label': 'Enemy_KIA', 'value': 'Enemy_KIA'},
-                {'label': 'Friend_KIA', 'value': 'Friend_KIA'},
-                {'label': 'Civilian_KIA', 'value': 'Civilian_KIA'}
+                {'label': 'Enemy Forces', 'value': 'Enemy_KIA'},
+                {'label': 'Friendly Forces', 'value': 'Friend_KIA'},
+                {'label': 'Iraqi Forces', 'value': 'Host_nation_KIA'},
+                {'label': 'Civilians', 'value': 'Civilian_KIA'}
             ],
             value=['Civilian_KIA']
         ),
