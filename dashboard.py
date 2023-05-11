@@ -17,7 +17,8 @@ app.layout = html.Div([
                 html.Div(className='tab', children=[
                     html.Button('Plot 1', id='plot1-button', className='tablinks'),
                     html.Button('Plot 2', id='plot2-button', className='tablinks'),
-                    html.Button('Plot 3', id='plot3-button', className='tablinks')
+                    html.Button('Plot 3', id='plot3-button', className='tablinks'),
+                    html.Button('Plot 4', id='plot4-button', className='tablinks')
                 ]),
             ]),
         ]),
@@ -29,7 +30,8 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('plot1-button', 'n_clicks'),
                Input('plot2-button', 'n_clicks'),
-               Input('plot3-button', 'n_clicks')])
+               Input('plot3-button', 'n_clicks'),
+               Input('plot4-button', 'n_clicks')])
 def display_page(n_clicks_plot1, n_clicks_plot2, n_clicks_plot3):
     ctx = dash.callback_context
     if not ctx.triggered:
