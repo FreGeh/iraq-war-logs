@@ -15,6 +15,7 @@ app.layout = html.Div([
             html.Div([
                 html.H2('Dashboard'),
                 html.P('Öffne den entsprechenden Plot:'),
+                html.P('Aufgrund der großen Datenmenge kann es zu einer längeren Ladezeit kommen.'),
                 html.Div(className='tab', children=[
                     html.Button('Plot 1', id='plot1-button', className='tablinks'),
                     html.Button('Plot 2', id='plot2-button', className='tablinks'),
@@ -27,6 +28,8 @@ app.layout = html.Div([
     ]),
 ])
 
+
+# ... other imports ...
 
 @app.callback(Output('page-content', 'children'),
               [Input('plot1-button', 'n_clicks'),
@@ -41,17 +44,13 @@ def display_page(n_clicks_plot1, n_clicks_plot2, n_clicks_plot3, n_clicks_plot4)
         button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
     if button_id == 'plot1-button':
-        fig1 = create_plot1_layout()
-        return dcc.Graph(figure=fig1)
+        return create_plot1_layout()  # Just return the layout, not a figure
     elif button_id == 'plot2-button':
-        fig2 = create_plot2_layout()
-        return dcc.Graph(figure=fig2)
+        return create_plot2_layout()  # Just return the layout, not a figure
     elif button_id == 'plot3-button':
         return html.Div([html.H3('Plot 3 layout goes here.')])
     elif button_id == 'plot4-button':
         return html.Div([html.H3('Plot 4 layout goes here.')])
-
-
 
 create_plot1_callback(app)
 
