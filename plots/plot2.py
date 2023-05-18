@@ -7,15 +7,16 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 
-with open("merged_provinces.geojson") as f:
+with open("./merged_provinces.geojson") as f:
     data = json.load(f)
 
 # Read the CSV
-df = pd.read_csv('iraq.csv')
+df = pd.read_csv('./iraq.csv')
 
 # Convert 'Datetime' column to datetime and extract the month
 df['Datetime'] = pd.to_datetime(df['Datetime'])
 df['Month'] = df['Datetime'].dt.to_period('M')
+
 
 # Group by Region and Month and sum the KIA columns
 df_grouped = df.groupby(['Region', 'Month'])[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum().reset_index()
@@ -35,6 +36,8 @@ def calculate_percentage(col_name):
 for kia_type in ['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']:
     calculate_percentage(kia_type)
 
+    
+
 # Merge with the geojson data
 for feature in data['features']:
     feature['id'] = feature['properties']['NAME_1']
@@ -48,16 +51,17 @@ def create_plot2_layout():
 
     # Create a trace for each kia_type in the first month
     for kia_type in ['Enemy_KIA_Percentage', 'Friend_KIA_Percentage', 'Civilian_KIA_Percentage', 'Host_nation_KIA_Percentage']:
-        fig.add_trace(go.Choroplethmapbox(visible=(kia_type == 'Enemy_KIA_Percentage'),
-                                        geojson=data, 
-                                        locations=df_grouped.loc[df_grouped.Month == df_grouped.Month.min(), 'Region'], 
-                                        z=df_grouped.loc[df_grouped.Month == df_grouped.Month.min(), kia_type], 
-                                        colorscale="YlOrRd",
-                                        zmin=0,
-                                        zmax=100,
-                                        marker_opacity=0.9, 
-                                        marker_line_width=0,
-                                        name=kia_type))
+        fig.add_trace(go.Choroplethmapbox(visible=(kia_type == 'Civilian_KIA_Percentage'),  # changed here
+                                          geojson=data, 
+                                          locations=df_grouped.loc[df_grouped.Month == df_grouped.Month.min(), 'Region'], 
+                                          z=df_grouped.loc[df_grouped.Month == df_grouped.Month.min(), kia_type], 
+                                          colorscale="YlOrRd",
+                                          zmin=0,
+                                          zmax=100,
+                                          marker_opacity=0.9, 
+                                          marker_line_width=0,
+                                          name=kia_type))
+
 
     frames = []  # Create a list to store frames
 
@@ -74,9 +78,10 @@ def create_plot2_layout():
                                 marker_opacity=0.9, 
                                 marker_line_width=0)
             for kia_type in ['Enemy_KIA_Percentage', 'Friend_KIA_Percentage', 'Civilian_KIA_Percentage', 'Host_nation_KIA_Percentage']
-        ], name=f'{month}'))
+        ], name=month))  # frame name is just the 'month'
 
     fig.frames = frames  # Assign the list of frames to fig.frames
+
 
     fig.update_layout(
     updatemenus=[
@@ -114,61 +119,52 @@ def create_plot2_layout():
             direction="down",
             pad={"r": 10, "t": 10},
             showactive=True,
-            x=0.1,
+            x=0,
             xanchor="left",
-            y=1.1,
+            y=1.2,
             yanchor="top",
             buttons=list([
+                dict(label="Civilian_KIA_Percentage", method="update", args=[{"visible": [False, False, True, False]}]),  # changed here
                 dict(label="Enemy_KIA_Percentage", method="update", args=[{"visible": [True, False, False, False]}]),
                 dict(label="Friend_KIA_Percentage", method="update", args=[{"visible": [False, True, False, False]}]),
-                dict(label="Civilian_KIA_Percentage", method="update", args=[{"visible": [False, False, True, False]}]),
                 dict(label="Host_nation_KIA_Percentage", method="update", args=[{"visible": [False, False, False, True]}]),
             ]),
         ),
     ],
     sliders=[
-    dict(
-        steps=[
-            dict(
-                method="animate",
-                args=[
-                    [f"{kia_type}_{str(month)}"],  # Convert the Period object to a string
-                    {
-                        "frame": {"duration": 300, "redraw": True},
-                        "fromcurrent": True,
-                        "transition": {"duration": 300},
-                    },
-                ],
-                label=str(month)  # Convert the Period object to a string
+        dict(
+            steps=[
+                dict(
+                    method="animate",
+                    args=[
+                        [str(month)],  # frame to animate to
+                        {
+                            "frame": {"duration": 300, "redraw": True},
+                            "mode": "immediate",
+                            "transition": {"duration": 300},
+                        },
+                    ],
+                    label=str(month)  # label is the 'month'
+                )
+                for month in df_grouped.Month.unique()
+            ],
+            active=0,
+            transition={"duration": 300},
+            x=0,
+            y=0,
+            currentvalue=dict(
+                font=dict(size=12),
+                prefix="Month: ",
+                visible=True,
+                xanchor="center"
             )
-            for kia_type in ['Enemy_KIA_Percentage', 'Friend_KIA_Percentage', 'Civilian_KIA_Percentage', 'Host_nation_KIA_Percentage']
-            for month in months
-        ],
-        active=0,
-        transition={"duration": 300},
-        x=0,
-        y=0,
-        currentvalue=dict(
-            font=dict(size=12),
-            prefix="Month: ",
-            visible=True,
-            xanchor="center"
         )
-    )
-    
-],
-
-
-
-
+    ],
     mapbox_style="carto-positron",
-    mapbox_zoom=3,
+    mapbox_zoom=4,
     mapbox_center={"lat": 33.3152, "lon": 44.3661},  # approximate center of Iraq
-    title="Killed in Action by Region",
-)
-
-
-
+    title="Killed in Action by Region", 
+    )
 
     layout = html.Div([
         html.H1('Plot 2'),

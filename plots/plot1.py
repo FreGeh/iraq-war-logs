@@ -10,7 +10,7 @@ from dash import no_update
 df = pd.read_csv("./iraq.csv")
 
 # Convert 'Datetime' column to datetime and extract the day
-df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date
+df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date 
 
 # Group by day and sum the KIA columns
 df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum().reset_index()
@@ -78,10 +78,6 @@ def create_plot1_callback(app):
                          label="1y",
                          step="year",
                          stepmode="backward"),
-                    dict(count=1,
-                         label="YTD",
-                         step="year",
-                         stepmode="todate"),
                     dict(step="all")                
                 ])
             ),

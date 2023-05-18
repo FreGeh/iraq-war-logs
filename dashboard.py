@@ -1,58 +1,62 @@
-import dash_core_components as dcc
-import dash_html_components as html
-import dash
-from dash.dependencies import Input, Output
+import dash as dash
+import dash.dependencies as dd
+from flask_caching import Cache
+from dash_extensions.enrich import DashProxy, MultiplexerTransform
 from plots.plot1 import create_plot1_layout, create_plot1_callback
 from plots.plot2 import create_plot2_layout
+from plots.plot3 import create_plot3_layout, create_plot3_callback
+from plots.plot4 import create_plot4_layout, create_plot4_callback
+from plots.plot5 import create_plot5_layout, create_plot5_callback
+import flask
+server = flask.Flask(__name__)
+app = dash.Dash(__name__, server=server)
 
-app = dash.Dash(__name__)
 app.config.suppress_callback_exceptions = True
 
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div([
-        html.Div([
-            html.Div([
-                html.H2('Dashboard'),
-                html.P('Öffne den entsprechenden Plot:'),
-                html.P('Aufgrund der großen Datenmenge kann es zu einer längeren Ladezeit kommen.'),
-                html.Div(className='tab', children=[
-                    html.Button('Plot 1', id='plot1-button', className='tablinks'),
-                    html.Button('Plot 2', id='plot2-button', className='tablinks'),
-                    html.Button('Plot 3', id='plot3-button', className='tablinks'),
-                    html.Button('Plot 4', id='plot4-button', className='tablinks')
-                ]),
+cache = Cache(server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': '/Users/ibm/Programming/datahirachy/cache'
+})
+cache.init_app(app.server)
+
+app.layout = dash.html.Div([
+    dash.dcc.Location(id='url', refresh=False),
+    dash.html.Div([
+        dash.html.Div([
+            dash.html.H1('Data Visualization Assignment', style={'textAlign': 'center'}),
+            dash.html.P('Aufgrund der großen Datenmenge kann das Laden etwas länger dauern (15-30 seconds).', style={'textAlign': 'center'}),
+            dash.html.H3('Wähle einen der Plots aus:', style={'textAlign': 'center'}),
+            dash.dcc.Tabs(id='tabs-example', value='plot1', children=[
+                dash.dcc.Tab(label='Plot 1', value='plot1'),
+                dash.dcc.Tab(label='Plot 2', value='plot2'),
+                dash.dcc.Tab(label='Plot 3', value='plot3'),
+                dash.dcc.Tab(label='Plot 4', value='plot4'),
+                dash.dcc.Tab(label='Plot 5', value='plot5'),
             ]),
         ]),
-    html.Div(id='page-content'),
     ]),
+    dash.html.Div(id='tabs-content-example'),
 ])
+@app.callback(dd.Output('tabs-content-example', 'children'),
+              dd.Input('tabs-example', 'value'))
+@cache.memoize(timeout=600)
+def render_content(tab):
+    if tab == 'plot1':
+        return create_plot1_layout()
+    elif tab == 'plot2':
+        return create_plot2_layout()
+    elif tab == 'plot3':
+        return create_plot3_layout()
+    elif tab == 'plot4':
+        return create_plot4_layout()
+    elif tab == 'plot5':
+        return create_plot5_layout()
 
-
-# ... other imports ...
-
-@app.callback(Output('page-content', 'children'),
-              [Input('plot1-button', 'n_clicks'),
-               Input('plot2-button', 'n_clicks'),
-               Input('plot3-button', 'n_clicks'),
-               Input('plot4-button', 'n_clicks')])
-def display_page(n_clicks_plot1, n_clicks_plot2, n_clicks_plot3, n_clicks_plot4):
-    ctx = dash.callback_context
-    if not ctx.triggered:
-        return html.Div([])
-    else:
-        button_id = ctx.triggered[0]['prop_id'].split('.')[0]
-
-    if button_id == 'plot1-button':
-        return create_plot1_layout()  # Just return the layout, not a figure
-    elif button_id == 'plot2-button':
-        return create_plot2_layout()  # Just return the layout, not a figure
-    elif button_id == 'plot3-button':
-        return html.Div([html.H3('Plot 3 layout goes here.')])
-    elif button_id == 'plot4-button':
-        return html.Div([html.H3('Plot 4 layout goes here.')])
 
 create_plot1_callback(app)
+create_plot3_callback(app)
+create_plot4_callback(app)
+create_plot5_callback(app)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
