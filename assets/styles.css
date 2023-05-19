@@ -13,14 +13,24 @@ body {
 }
 
 h1, h3 {
-    color: #3a4f6d;
+    color: #000000;
     text-align: center;
     padding: 10px;
 }
 
-p {
-    color: #3f89ad;
+h4 {
+    color: #000000;
     text-align: center;
+    padding: 0px;
+}
+
+p {
+    color: #000000;
+    text-align: center;
+}
+.my-tab .tab-title {
+    max-width: 150px;  /* Passen Sie die Breite nach Bedarf an */
+    white-space: normal;
 }
 
 .dash-html-components-div {
@@ -58,6 +68,7 @@ p {
     color: #31708f;
 }
 
+
 .my-content {
     padding: 20px;
 }
@@ -74,16 +85,35 @@ p {
     margin: 15px 0;  
     padding: 10px;
     border-radius: 4px;
-    background-color: #f3c68b;
+    background-color: #e1e6f1;
     color: #3a4f6d;
     border: 1px solid #3a4f6d;
 }
 
-.plot1-dropdown label {
-    color: #3a4f6d;
+.plot1-dropdown label:nth-child(1) {
+    color: blue;
     font-weight: bold;
     font-size: 18px;
 }
+
+.plot1-dropdown label:nth-child(2) {
+    color: red;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.plot1-dropdown label:nth-child(3) {
+    color: green;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.plot1-dropdown label:nth-child(4) {
+    color: orange;
+    font-weight: bold;
+    font-size: 18px;
+}
+
 
 
 
@@ -100,7 +130,7 @@ p {
     background-color: #a9aff3;
 }
 .cool-button {
-    background-color: #4CAF50; /* Green */
+    background-color: #000000; /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -117,7 +147,7 @@ p {
 .cool-button:hover {
     background-color: white; 
     color: black; 
-    border: 2px solid #4CAF50;
+    border: 2px solid #000000;
 }
 
 

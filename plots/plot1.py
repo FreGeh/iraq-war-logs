@@ -59,7 +59,7 @@ def create_plot1_callback(app):
                                     hovertemplate="<b>14-day Moving Avg</b>: %{y:.2f} <br> <b>Day</b>: %{x}"))
 
         fig = go.Figure(data=data)
-        fig.update_layout(showlegend=True, title="Killed in Action per Day with 14-day Moving Averages", xaxis_title="Zeitabschnitt", yaxis_title="Anzahl der Toten", barmode='stack')
+        fig.update_layout(showlegend=True, title="Todesfälle pro Tag und der Durchschnitt der letzten 14 Tage", xaxis_title="Zeitabschnitt", yaxis_title="Anzahl der Toten", barmode='stack')
 
         # Add range selector and range slider
         fig.update_xaxes(

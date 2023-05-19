@@ -31,7 +31,7 @@ options = [
 
 def create_plot3_layout():
     layout = html.Div([
-        html.H1('Plot 3: Kategorische Einteilung der Toten und Verwundete nach Verusachungsgrund'),
+        html.H1('Plot 3: Kategorische Einteilung der Toten und Verwundeten nach Verusachungsgrund'),
         dcc.Dropdown(
             id='dropdown',
             options=options,
@@ -39,7 +39,8 @@ def create_plot3_layout():
             multi=True,
             placeholder='Wähle eine Kategorie aus'        
         ),
-        dcc.Graph(id='treemap')
+        dcc.Graph(id='treemap'),
+        html.P('IED: Improvised Explosive Device.')
     ])
     return layout
 
@@ -79,5 +80,5 @@ def create_plot3_callback(app):
         fig = px.treemap(df_grouped, path=['Type', 'Category'], values=value_column,
                         color=value_column,
                         color_continuous_scale='YlOrRd',
-                        title='Verteilung der Typen auf Kateogrien')
+                        title='Verteilung der Typen auf Kategorien')
         return fig

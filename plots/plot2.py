@@ -124,10 +124,10 @@ def create_plot2_layout():
             y=1.2,
             yanchor="top",
             buttons=list([
-                dict(label="Civilian_KIA_Percentage", method="update", args=[{"visible": [False, False, True, False]}]),  # changed here
-                dict(label="Enemy_KIA_Percentage", method="update", args=[{"visible": [True, False, False, False]}]),
-                dict(label="Friend_KIA_Percentage", method="update", args=[{"visible": [False, True, False, False]}]),
-                dict(label="Host_nation_KIA_Percentage", method="update", args=[{"visible": [False, False, False, True]}]),
+                dict(label="Civilian Deaths %", method="update", args=[{"visible": [False, False, True, False]}]),  # changed here
+                dict(label="Enemy Forces Deaths %", method="update", args=[{"visible": [True, False, False, False]}]),
+                dict(label="Friendly Force Deaths %", method="update", args=[{"visible": [False, True, False, False]}]),
+                dict(label="Iraqi Forces Deaths %", method="update", args=[{"visible": [False, False, False, True]}]),
             ]),
         ),
     ],
@@ -154,7 +154,7 @@ def create_plot2_layout():
             y=0,
             currentvalue=dict(
                 font=dict(size=12),
-                prefix="Month: ",
+                prefix="Monat: ",
                 visible=True,
                 xanchor="center"
             )
@@ -163,12 +163,14 @@ def create_plot2_layout():
     mapbox_style="carto-positron",
     mapbox_zoom=4,
     mapbox_center={"lat": 33.3152, "lon": 44.3661},  # approximate center of Iraq
-    title="Killed in Action by Region", 
+    title="Todesfälle nach Verantwortungsbereich", 
     )
 
     layout = html.Div([
         html.H1('Plot 2: Geografische Einteilung der Todesfälle'),
         dcc.Graph(id='choropleth-plot', figure=fig),  # wrap the figure in a dcc.Graph
+        html.H4('Verantwortungsbereiche:'),
+        html.P('MNF-W: Multinationale Streitkräfte im Westen; MND-N: Multinationale Division im Norden; MND-BAGHDAD: Multinationale Division in Bagdad; MND-C: Multinationale Division in Zentral-Irak; MND-SE: Multinationale Division im Südosten')
     ])
 
     return layout

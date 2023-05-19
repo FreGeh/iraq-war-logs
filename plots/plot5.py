@@ -7,9 +7,9 @@ import numpy as np
 
 def create_plot5_layout():
     return html.Div([
-        html.H1('Plot 5: Zivile Todesopfer unterteilt nach Typ der Todsursache'),
+        html.H1('Plot 5: Zivile Opfer unterteilt nach Typ der Ursache'),
+        html.Button('Skala Wechseln (Linear/Log)', id='log-button', className='cool-button'),
         dcc.Graph(id='plot5-graph'),  # Plot layout: a graph component
-        html.Button('Skala Wechseln (Linear/Log)', id='log-button', className='cool-button')
     ])
 
 
@@ -71,5 +71,5 @@ def create_plot5_callback(app):
         )
 
         fig = go.Figure(data=data, layout=layout)
-
+x
         return fig
