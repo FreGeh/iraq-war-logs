@@ -29,10 +29,10 @@ def create_plot1_layout():
             id='attribute-selector',
             className='plot1-dropdown',
             options=[
+                {'label': 'Civilians', 'value': 'Civilian_KIA'},
                 {'label': 'Enemy Forces', 'value': 'Enemy_KIA'},
                 {'label': 'Friendly Forces', 'value': 'Friend_KIA'},
-                {'label': 'Iraqi Forces', 'value': 'Host_nation_KIA'},
-                {'label': 'Civilians', 'value': 'Civilian_KIA'}
+                {'label': 'Iraqi Forces', 'value': 'Host_nation_KIA'}
             ],
             value=['Civilian_KIA']
         ),
@@ -59,7 +59,7 @@ def create_plot1_callback(app):
                                     hovertemplate="<b>14-day Moving Avg</b>: %{y:.2f} <br> <b>Day</b>: %{x}"))
 
         fig = go.Figure(data=data)
-        fig.update_layout(showlegend=True, title="Killed in Action per Day with 14-day Moving Averages", xaxis_title="Date", yaxis_title="Anzahl der Toten", barmode='stack')
+        fig.update_layout(showlegend=True, title="Killed in Action per Day with 14-day Moving Averages", xaxis_title="Zeitabschnitt", yaxis_title="Anzahl der Toten", barmode='stack')
 
         # Add range selector and range slider
         fig.update_xaxes(

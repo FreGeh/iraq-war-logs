@@ -38,12 +38,25 @@ def create_plot3_layout():
             value=['Counts'],  # default value as a list
             multi=True,
             placeholder='Wähle eine Kategorie aus'        
-            ),
+        ),
         dcc.Graph(id='treemap')
     ])
     return layout
 
+from dash.dependencies import Input, Output, State
+
 def create_plot3_callback(app):
+    @app.callback(
+        Output('dropdown', 'value'),
+        [Input('dropdown', 'value')],
+        [State('dropdown', 'value')]
+    )
+    def update_dropdown_value(new_values, old_values):
+        if 'Counts' in new_values and len(new_values) > 1:
+            return [value for value in new_values if value != 'Counts']
+        else:
+            return new_values
+
     @app.callback(
         Output('treemap', 'figure'),
         [Input('dropdown', 'value')]

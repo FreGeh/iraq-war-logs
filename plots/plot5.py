@@ -58,13 +58,13 @@ def create_plot5_callback(app):
         xaxis_type = 'log' if n_clicks and n_clicks % 2 != 0 else 'linear'
 
         layout = go.Layout(
-            title="Durschnittliche Zivile Tote und Verwundete pro Kategorie und Typ",
+            title="Durchschnittliche Zivile Tote und Verwundete pro Kategorie und Typ",
             xaxis=dict(
-                title="Durschnittliche Anzahl Tote und Verwundete",
+                title="Durchschnittliche Anzahl Tote und Verwundete",
                 type=xaxis_type
             ),
             yaxis=dict(
-                title="Type",
+                title="Typ",
                 type='category'
             ),
             hovermode='closest'
