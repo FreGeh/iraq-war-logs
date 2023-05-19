@@ -7,7 +7,7 @@ import datetime
 from dash import no_update
 
 # Sample data
-df = pd.read_csv("./iraq.csv")
+df = pd.read_csv("./iraq1.csv")
 
 # Convert 'Datetime' column to datetime and extract the day
 df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date 
@@ -24,10 +24,10 @@ colors = {
 
 def create_plot1_layout():
     layout = html.Div([
-        html.H1('Plot 1'),
-        html.H3('Killed in Action:'),
+        html.H1('Plot 1: Zeitliche Einteilung der Todesfälle'),
         dcc.Checklist(
             id='attribute-selector',
+            className='plot1-dropdown',
             options=[
                 {'label': 'Enemy Forces', 'value': 'Enemy_KIA'},
                 {'label': 'Friendly Forces', 'value': 'Friend_KIA'},
@@ -59,7 +59,7 @@ def create_plot1_callback(app):
                                     hovertemplate="<b>14-day Moving Avg</b>: %{y:.2f} <br> <b>Day</b>: %{x}"))
 
         fig = go.Figure(data=data)
-        fig.update_layout(showlegend=True, title="Killed in Action per Day with 14-day Moving Averages", xaxis_title="Date", yaxis_title="Number of Deaths", barmode='stack')
+        fig.update_layout(showlegend=True, title="Killed in Action per Day with 14-day Moving Averages", xaxis_title="Date", yaxis_title="Anzahl der Toten", barmode='stack')
 
         # Add range selector and range slider
         fig.update_xaxes(

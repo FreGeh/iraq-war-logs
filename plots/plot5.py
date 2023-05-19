@@ -6,14 +6,20 @@ from dash.dependencies import Input, Output, State
 import numpy as np
 
 def create_plot5_layout():
-    return dcc.Graph(id='plot5-graph')  # Plot layout: a graph component
+    return html.Div([
+        html.H1('Plot 5: Zivile Todesopfer unterteilt nach Typ der Todsursache'),
+        dcc.Graph(id='plot5-graph'),  # Plot layout: a graph component
+        html.Button('Skala Wechseln (Linear/Log)', id='log-button', className='cool-button')
+    ])
+
 
 def create_plot5_callback(app):
     @app.callback(
         Output('plot5-graph', 'figure'),
-        Input('plot5-graph', 'id')  # change the input to the id of the graph itself
+        Input('plot5-graph', 'id'),  # change the input to the id of the graph itself
+        Input('log-button', 'n_clicks')
     )
-    def update_plot(id):
+    def update_plot(id, n_clicks):
         df = pd.read_csv("./iraq1.csv")
         df['Civilian_Casualties'] = df['Civilian_KIA'] + df['Civilian_WIA']
 
@@ -48,11 +54,14 @@ def create_plot5_callback(app):
 
             data.append(trace)
 
+        # Determine whether the x-axis should be linear or logarithmic
+        xaxis_type = 'log' if n_clicks and n_clicks % 2 != 0 else 'linear'
+
         layout = go.Layout(
             title="Durschnittliche Zivile Tote und Verwundete pro Kategorie und Typ",
             xaxis=dict(
-                title="Durschnittliche Anzahl Tote und Verwundete (log scale)",
-                type='log'
+                title="Durschnittliche Anzahl Tote und Verwundete",
+                type=xaxis_type
             ),
             yaxis=dict(
                 title="Type",

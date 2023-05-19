@@ -11,7 +11,7 @@ with open("./merged_provinces.geojson") as f:
     data = json.load(f)
 
 # Read the CSV
-df = pd.read_csv('./iraq.csv')
+df = pd.read_csv('./iraq1.csv')
 
 # Convert 'Datetime' column to datetime and extract the month
 df['Datetime'] = pd.to_datetime(df['Datetime'])
@@ -167,7 +167,7 @@ def create_plot2_layout():
     )
 
     layout = html.Div([
-        html.H1('Plot 2'),
+        html.H1('Plot 2: Geografische Einteilung der Todesfälle'),
         dcc.Graph(id='choropleth-plot', figure=fig),  # wrap the figure in a dcc.Graph
     ])
 

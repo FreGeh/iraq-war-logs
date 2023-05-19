@@ -8,6 +8,8 @@
 4. source venv/bin/activate
 5. pip install -r requirements.txt
 
+# oder über pipfile
+
 # Öffnen des Dashboards
 
-1. dashboard.py
+1. python3 dashboard.py

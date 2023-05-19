@@ -1,0 +1,127 @@
+body {
+    background-color: #e9e9e9;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding-bottom: 100px;
+}
+
+.container {
+    max-width: 960px;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+h1, h3 {
+    color: #3a4f6d;
+    text-align: center;
+    padding: 10px;
+}
+
+p {
+    color: #3f89ad;
+    text-align: center;
+}
+
+.dash-html-components-div {
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+}
+
+.dash-core-components-tabs {
+    color: #5e9ca0;
+    border-bottom: 1px solid #ddd;
+    list-style: none;
+    padding-left: 0;
+}
+
+.dash-core-components-tab {
+    display: inline-block;
+    margin-bottom: -1px;
+    padding: 10px 15px;
+    line-height: 20px;
+    color: #5e9ca0;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px 4px 0 0;
+}
+
+.dash-core-components-tab:hover {
+    color: #31708f;
+    background-color: #eee;
+    border-color: #ddd;
+}
+
+#tabs-content-example {
+    padding: 20px;
+    color: #31708f;
+}
+
+.my-content {
+    padding: 20px;
+}
+
+.plot1 {
+    background-color: #f6d6ad;
+}
+
+.plot1-dropdown {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 25px 30px;  
+    margin: 15px 0;  
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f3c68b;
+    color: #3a4f6d;
+    border: 1px solid #3a4f6d;
+}
+
+.plot1-dropdown label {
+    color: #3a4f6d;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+
+
+.plot2 {
+    background-color: #c3aed6;
+}
+
+.plot3 {
+    background-color: #d6e9c6;
+}
+
+
+.plot4 {
+    background-color: #fad0c3;
+}
+.cool-button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    transition-duration: 0.2s;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+}
+
+.cool-button:hover {
+    background-color: white; 
+    color: black; 
+    border: 2px solid #4CAF50;
+}
+
+
+.plot5 {
+    background-color: #fef3bd;
+}
+

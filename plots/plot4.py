@@ -6,8 +6,9 @@ import pandas as pd
 
 def create_plot4_layout():
     return html.Div([
+        html.H1('Plot 4: Zivile Opfer unterteilt nach Zugehörigkeit der Verursacher'),
         dcc.Graph(id='plot4-graph'),  # Plot 4 layout: a graph component
-        html.Button('Include Civilian_WIA', id='wia-button')
+        html.Button('Auch Verwundete miteinbeziehen', id='wia-button', className='cool-button'),
     ])
 
 
@@ -17,7 +18,7 @@ def create_plot4_callback(app):
         [Input('wia-button', 'n_clicks')]
     )
     def update_plot(n_clicks):
-            df = pd.read_csv("./iraq.csv")
+            df = pd.read_csv("./iraq1.csv")
             df = df[df['Affiliation'].isin(['FRIEND', 'ENEMY'])]
             df = df[df['Civilian_KIA'] > 1]  # Only consider Civilian_KIA greater than 1
 
@@ -27,7 +28,7 @@ def create_plot4_callback(app):
                 traces.append(
                     go.Violin(
                         y=df[df['Affiliation'] == affil]['Civilian_KIA'],
-                        name=affil + ' KIA',
+                        name=affil + " (Tote)",
                         box_visible=True,
                         meanline_visible=True,
                         hovertemplate = 
@@ -39,19 +40,19 @@ def create_plot4_callback(app):
                     traces.append(
                         go.Violin(
                             y=df[df['Affiliation'] == affil]['Civilian_WIA'],
-                            name=affil + ' WIA',
+                            name= affil + " (Verwundete)",
                             box_visible=True,
                             meanline_visible=True,
                             hovertemplate = 
                             '<b>Zugehörigkeit</b>: %{x}<br>'+
-                            '<b>Verletzte</b>: %{y}<extra></extra>'
+                            '<b>Verwundete</b>: %{y}<extra></extra>'
                         )
                     )
 
             layout = go.Layout(
-                title="Verteilung der Todesfälle und Verletzungen für jede Zugehörigkeit",
+                title="Verteilung der Toten und Verwundeten für jede Zugehörigkeit",
                 yaxis=dict(
-                    title="Anzahl der Zivilen Tote und Verletzte",
+                    title="Anzahl der Zivilen Toten und Verwundeten",
                     type='log'  # Using a log scale can help with skewed distributions
                 ),
                 xaxis=dict(
