@@ -71,5 +71,5 @@ def create_plot5_callback(app):
         )
 
         fig = go.Figure(data=data, layout=layout)
-x
+        
         return fig
