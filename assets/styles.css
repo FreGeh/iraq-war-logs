@@ -33,6 +33,8 @@ p {
     white-space: normal;
 }
 
+
+
 .dash-html-components-div {
     background-color: #ffffff;
     border-radius: 4px;
@@ -40,7 +42,6 @@ p {
 }
 
 .dash-core-components-tabs {
-    color: #5e9ca0;
     border-bottom: 1px solid #ddd;
     list-style: none;
     padding-left: 0;
@@ -51,21 +52,18 @@ p {
     margin-bottom: -1px;
     padding: 10px 15px;
     line-height: 20px;
-    color: #5e9ca0;
     background-color: #fff;
     border: 1px solid transparent;
     border-radius: 4px 4px 0 0;
 }
 
 .dash-core-components-tab:hover {
-    color: #31708f;
     background-color: #eee;
     border-color: #ddd;
 }
 
 #tabs-content-example {
     padding: 20px;
-    color: #31708f;
 }
 
 
@@ -130,7 +128,7 @@ p {
     background-color: #a9aff3;
 }
 .cool-button {
-    background-color: #000000; /* Green */
+    background-color: #000000;
     border: none;
     color: white;
     padding: 15px 32px;

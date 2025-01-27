@@ -4,4 +4,4 @@ plots/__pycache__/
 *.code-workspace
 .DS_Store
 Thumbs.db
-prepare/
+prepare/*.dsh

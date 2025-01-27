@@ -1,4 +1,4 @@
-from dash import dcc
+from dash import dcc 
 from dash import html
 import plotly.graph_objects as go
 from dash.dependencies import Input, Output, State
@@ -6,8 +6,8 @@ import pandas as pd
 
 def create_plot4_layout():
     return html.Div([
-        html.H1('Plot 4: Zivile Opfer unterteilt nach Zugehörigkeit der Verursacher'),
-        html.Button('Auch Verwundete miteinbeziehen', id='wia-button', className='cool-button'),
+        html.H1('Plot 4: Civilian Casualties by Responsible Affiliation'),
+        html.Button('Include Wounded', id='wia-button', className='cool-button'),
         dcc.Graph(id='plot4-graph'),  # Plot 4 layout: a graph component
     ])
 
@@ -20,47 +20,47 @@ def create_plot4_callback(app):
     def update_plot(n_clicks):
         df = pd.read_csv("./iraq1.csv")
         df = df[df['Affiliation'].isin(['FRIEND', 'ENEMY'])]
-        df = df[df['Civilian_KIA'] > 1]  # Only consider Civilian_KIA greater than 1
+        df = df[df['Civilian_KIA'] > 1]  # Only include cases where Civilian_KIA is greater than 1
 
         traces = []
 
-        color_dict = {'FRIEND': 'green', 'ENEMY': 'red'}  # Map each affiliation to a color
+        color_dict = {'FRIEND': 'green', 'ENEMY': 'red'}  # Assign colors to each affiliation
 
         for affil in ['FRIEND', 'ENEMY']:
             traces.append(
                 go.Violin(
                     y=df[df['Affiliation'] == affil]['Civilian_KIA'],
-                    name=affil + " (Tote)",
-                    line_color=color_dict[affil],  # Use the corresponding color for this affiliation
-                    box_visible=True,
-                    meanline_visible=True,
+                    name="(Killed by) "+affil,
+                    line_color=color_dict[affil],  # Use the designated color for this affiliation
+                    box_visible=False,
+                    meanline_visible=False,
                     hovertemplate = 
-                    '<b>Zugehörigkeit</b>: %{x}<br>'+
-                    '<b>Todesfälle</b>: %{y}<extra></extra>'
+                    '<b>Affiliation</b>: %{x}<br>'+
+                    '<b>Fatalities</b>: %{y}<extra></extra>'
                 )
             )
             if n_clicks is not None and n_clicks > 0:
                 traces.append(
                     go.Violin(
                         y=df[df['Affiliation'] == affil]['Civilian_WIA'],
-                        name= affil + " (Verwundete)",
-                        line_color=color_dict[affil],  # Use the corresponding color for this affiliation
-                        box_visible=True,
-                        meanline_visible=True,
+                        name="(Wounded by) "+affil,
+                        line_color=color_dict[affil],  # Use the designated color for this affiliation
+                        box_visible=False,
+                        meanline_visible=False,
                         hovertemplate = 
-                        '<b>Zugehörigkeit</b>: %{x}<br>'+
-                        '<b>Verwundete</b>: %{y}<extra></extra>'
+                        '<b>Affiliation</b>: %{x}<br>'+
+                        '<b>Wounded</b>: %{y}<extra></extra>'
                     )
                 )
 
         layout = go.Layout(
-            title="Verteilung der Toten und Verwundeten für jede Zugehörigkeit",
+            title="Distribution of Civilian Fatalities and Wounded by Affiliation",
             yaxis=dict(
-                title="Anzahl der Zivilen Toten und Verwundeten",
-                type='log'  # Using a log scale can help with skewed distributions
+                title="Number of Civilian Fatalities and Wounded",
+                type='log'  # Log scale to better visualize skewed distributions
             ),
             xaxis=dict(
-                title="Verursacht durch"
+                title="Caused by"
             )
         )
 

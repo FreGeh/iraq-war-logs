@@ -7,15 +7,16 @@ import pandas as pd
 import datetime
 
 
-# Sample data
+# Load dataset
 df = pd.read_csv("./iraq1.csv")
 
-# Convert 'Datetime' column to datetime and extract the day
+# Convert 'Datetime' column to date format
 df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date 
 
-# Group by day and sum the KIA columns
+# Group data by day and sum the KIA (Killed in Action) columns
 df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum().reset_index()
 
+# Define color mapping for each category
 colors = {
     'Enemy_KIA': 'red',
     'Friend_KIA': 'green',
@@ -25,7 +26,7 @@ colors = {
 
 def create_plot1_layout():
     layout = html.Div([
-        html.H1('Plot 1: Zeitliche Einteilung der Todesfälle'),
+        html.H1('Plot 1: Temporal Distribution of Fatalities'),
         dcc.Checklist(
             id='attribute-selector',
             className='plot1-dropdown',
@@ -50,19 +51,22 @@ def create_plot1_callback(app):
         data = []
 
         for attribute in selected_attributes:
+            # Add bar plot for selected categories
             data.append(go.Bar(x=df_grouped['Datetime'], y=df_grouped[attribute], name=attribute, marker_color=colors[attribute],
-                                hovertemplate="<b>Deaths</b>: %{y} <br> <b>Day</b>: %{x}"))
+                                hovertemplate="<b>Fatalities</b>: %{y} <br> <b>Date</b>: %{x}"))
 
             # Calculate 14-day moving average
             moving_average = df_grouped[attribute].rolling(window=14).mean()
 
+            # Add line plot for 14-day moving average
             data.append(go.Scatter(x=df_grouped['Datetime'], y=moving_average, mode='lines', name=f"{attribute} 14-day MA", marker_color=colors[attribute],
-                                    hovertemplate="<b>14-day Moving Avg</b>: %{y:.2f} <br> <b>Day</b>: %{x}"))
+                                    hovertemplate="<b>14-day Moving Avg</b>: %{y:.2f} <br> <b>Date</b>: %{x}"))
 
         fig = go.Figure(data=data)
-        fig.update_layout(showlegend=True, title="Todesfälle pro Tag und der Durchschnitt der letzten 14 Tage", xaxis_title="Zeitabschnitt", yaxis_title="Anzahl der Toten", barmode='stack')
+        fig.update_layout(showlegend=True, title="Daily Fatalities and 14-Day Moving Average", 
+                          xaxis_title="Date", yaxis_title="Number of Fatalities", barmode='stack')
 
-        # Add range selector and range slider
+        # Add range selector and slider for zooming
         fig.update_xaxes(
             rangeslider_visible=True,
             rangeselector=dict(
