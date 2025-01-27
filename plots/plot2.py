@@ -3,8 +3,8 @@ import json
 import plotly.graph_objects as go
 import numpy as np
 from urllib.request import urlopen
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 
 
 with open("./merged_provinces.geojson") as f:

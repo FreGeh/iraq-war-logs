@@ -1,10 +1,11 @@
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
+from dash import no_update
 from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 import pandas as pd
 import datetime
-from dash import no_update
+
 
 # Sample data
 df = pd.read_csv("./iraq1.csv")

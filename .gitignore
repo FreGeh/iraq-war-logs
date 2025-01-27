@@ -1,1 +1,6 @@
 venv/
+plots/__pycache__/
+.vscode/
+*.code-workspace
+.DS_Store
+Thumbs.db
