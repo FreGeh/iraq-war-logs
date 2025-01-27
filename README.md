@@ -16,3 +16,5 @@ Using **Dash, Plotly, Pandas, and Flask**, this project creates interactive visu
 
 - **Create a virtual environment** and install the required libraries
 - **Run ``dashboard.py``**
+
+*made in 2023, small fixes in 2025*
