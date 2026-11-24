@@ -7,9 +7,9 @@ Using **Dash, Plotly, Pandas, and Flask**, this project creates interactive visu
 
 ## Plots  
 - **Plot 1**: **Temporal Distribution** of Fatalities – Displays the number of daily deaths (civilians, enemy forces, friendly forces, and Iraqi forces) with an additional 14-day moving average for trend analysis.
-- **Plot 2**: **Geographical Distribution** of Fatalities – A choropleth map showing the percentage of fatalities of different forces across Iraq's provinces over time, with an animated monthly progression. *(note: wait a few seconds when clicking on this plot for it to load)*
+- **Plot 2**: **Geographical Distribution** of Fatalities – A choropleth map showing each group’s share of recorded fatalities within each military responsibility zone and month, with an animated monthly progression. *(note: wait a few seconds when clicking on this plot for it to load)*
 - **Plot 3**: **Categorical Breakdown** of Casualties by Cause – A treemap visualizing the distribution of casualties based on the type and category of incidents, providing an overview of major contributing factors.
-- **Plot 4**: Civilian Casualties by **Perpetrator Affiliation** – A violin plot comparing civilian deaths and injuries caused by friendly versus enemy forces.
+- **Plot 4**: Civilian Casualties by **Reported Affiliation** – A violin plot comparing civilian deaths and injuries by the reported “Attack on” label, for incidents with at least two civilian deaths.
 - **Plot 5**: Civilian Casualties by **Incident Type** – A scatter plot showing the average number of civilian casualties per incident type and category.
 
 ## Setup  
@@ -17,4 +17,4 @@ Using **Dash, Plotly, Pandas, and Flask**, this project creates interactive visu
 - **Create a virtual environment** and install the required libraries
 - **Run ``dashboard.py``**
 
-*made in 2023, small fixes in 2025*
+*made in 2023, small fixes in 2025, 2026*

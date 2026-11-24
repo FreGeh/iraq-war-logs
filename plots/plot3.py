@@ -54,6 +54,8 @@ def create_plot3_callback(app):
         [State('dropdown', 'value')]
     )
     def update_dropdown_value(new_values, old_values):
+        if not new_values:
+            return ['Counts']
         if 'Counts' in new_values and len(new_values) > 1:
             return [value for value in new_values if value != 'Counts']
         else:
@@ -64,18 +66,15 @@ def create_plot3_callback(app):
         [Input('dropdown', 'value')]
     )
     def update_treemap(values):
-        df_grouped = pd.DataFrame()
-
-        if 'Counts' in values:
-            df_grouped = df_grouped_counts
-            values.remove('Counts')
+        values = [value for value in (values or []) if value != 'Counts']
 
         # If other values selected, sum them
         if values: 
-            df_grouped_sum['sum_values'] = df_grouped_sum[values].sum(axis=1)  # Add new column for sum of selected values
-            df_grouped = df_grouped_sum[df_grouped_sum['sum_values'] > 0]  # Remove zero-value entries
+            df_grouped = df_grouped_sum.assign(sum_values=df_grouped_sum[values].sum(axis=1))
+            df_grouped = df_grouped[df_grouped['sum_values'] > 0]
             value_column = 'sum_values'  # Set value_column for treemap
         else:
+            df_grouped = df_grouped_counts
             value_column = 'Counts'  # Default to total incidents if no other values are selected
 
         fig = px.treemap(df_grouped, path=['Type', 'Category'], values=value_column,

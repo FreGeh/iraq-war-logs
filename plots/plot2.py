@@ -47,7 +47,7 @@ def create_plot2_layout():
     # Base traces: GeoJSON is included only once
     for i, kia_type in enumerate(kia_types):
         fig.add_trace(
-            go.Choroplethmapbox(
+            go.Choroplethmap(
                 geojson=data,
                 locations=first_df['Region'],
                 z=first_df[kia_type],
@@ -70,7 +70,7 @@ def create_plot2_layout():
         frame_data = []
         for kia_type in kia_types:
             frame_data.append(
-                go.Choroplethmapbox(
+                go.Choroplethmap(
                     locations=month_df['Region'],
                     z=month_df[kia_type],
                     colorscale="YlOrRd",
@@ -170,9 +170,9 @@ def create_plot2_layout():
                 )
             )
         ],
-        mapbox_style="carto-positron",
-        mapbox_zoom=4,
-        mapbox_center={"lat": 33.3152, "lon": 44.3661},
+        map_style="carto-positron",
+        map_zoom=4,
+        map_center={"lat": 33.3152, "lon": 44.3661},
         title="Fatalities by Responsibility Zone", 
     )
 
@@ -186,7 +186,12 @@ def create_plot2_layout():
             html.Li(html.B("MND-BAGHDAD: Multinational Division Baghdad")),
             html.Li(html.B("MND-C: Multinational Division Central Iraq")),
             html.Li(html.B("MND-SE: Multinational Division Southeast")),
-        ])
+        ]),
+        html.P(
+            'Each percentage is a group’s share of all recorded fatalities in that '
+            'military responsibility zone and month.',
+            className='my-p',
+        ),
     ])
 
     return layout

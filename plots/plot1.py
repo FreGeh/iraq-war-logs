@@ -11,10 +11,10 @@ import datetime
 df = pd.read_csv("./iraq1.csv")
 
 # Convert 'Datetime' column to date format
-df['Datetime'] = pd.to_datetime(df['Datetime']).dt.date 
+df['Datetime'] = pd.to_datetime(df['Datetime']).dt.normalize()
 
 # Group data by day and sum the KIA (Killed in Action) columns
-df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum().reset_index()
+df_grouped = df.groupby('Datetime')[['Enemy_KIA', 'Friend_KIA', 'Civilian_KIA', 'Host_nation_KIA']].sum().asfreq('D').reset_index()
 
 # Define color mapping for each category
 colors = {

@@ -28,11 +28,20 @@ app.layout = dash.html.Div(className="container", children=[
             dash.dcc.Tab(label='Timeline', value='plot1', className='my-tab'),
             dash.dcc.Tab(label='Regional', value='plot2', className='my-tab'),
             dash.dcc.Tab(label='Causes', value='plot3', className='my-tab'),
-            dash.dcc.Tab(label='Responsibility', value='plot4', className='my-tab'),
+            dash.dcc.Tab(label='Reported Affiliation', value='plot4', className='my-tab'),
             dash.dcc.Tab(label='Lethality', value='plot5', className='my-tab'),
         ]),
     ]),
     dash.html.Div(id='tabs-content-example', className='my-content'),
+    dash.html.Footer([
+        dash.html.P([dash.html.Strong('Friend'), ' = U.S.-led coalition forces'], className='my-p'),
+        dash.html.P([dash.html.Strong('Host Nation'), ' = Iraqi government forces'], className='my-p'),
+        dash.html.P([
+            dash.html.Strong('Enemy'),
+            ' = Groups the coalition classified as hostile (e.g., al-Qaeda in Iraq '
+            'and the Mahdi Army)',
+        ], className='my-p'),
+    ]),
 ])
 
 
@@ -72,4 +81,4 @@ create_plot4_callback(app)
 create_plot5_callback(app)
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True)
